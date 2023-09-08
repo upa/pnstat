@@ -8,9 +8,10 @@ import os
 from datetime import datetime, timedelta, timezone
 
 class Netdev:
-    def __init__(self, name, params = []):
+    def __init__(self, name, params = [], per_second = False):
         self.name = name
         self.params = params
+        self.per_second = per_second
         self.stat_dir = "/sys/class/net/{}/statistics".format(self.name)
         if not os.path.exists(self.stat_dir):
             raise AttributeError("{} does not exist for {}".format(self.stat_dir,
@@ -40,7 +41,10 @@ class Netdev:
         elapsed = (self.curr - self.last).total_seconds()
         for param in self.params:
             prev, curr = self.d[param]
-            d[param] = round((curr - prev) / elapsed, 2)
+            if self.per_second:
+                d[param] = round((curr - prev) / elapsed, 2)
+            else:
+                d[param] = curr
         return d
 
     def json(self):
@@ -84,7 +88,7 @@ def pnstat(args, netdevs):
 def main():
 
     prog = "pnstat"
-    desc = "(Simply) print netdev statistics (per second)"
+    desc = "(Simply) print netdev statistics"
 
     parser = argparse.ArgumentParser(prog = prog, description = desc)
     parser.add_argument("-n", "--netdev", action = "append", default = [],
@@ -102,6 +106,8 @@ def main():
                         choices = ["default", "witherrors", "all"],
                         default = "default",
                         help = "keys to be gathered")
+    parser.add_argument("--per-second", action = "store_true",
+                        help = "print values in per-second basis")
     args = parser.parse_args()
 
     if args.keys == "default":
@@ -119,7 +125,9 @@ def main():
     if len(args.netdev) == 0:
         args.netdev = os.listdir("/sys/class/net") # all netdevs
 
-    netdevs = [Netdev(x, params = params) for x in args.netdev]
+    netdevs = [
+        Netdev(x, params = params, per_second = args.per_second) for x in args.netdev
+    ]
 
     try:
         pnstat(args, netdevs)
