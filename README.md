@@ -47,7 +47,7 @@ enp1s0f0np0 rx_bytes:0.0 rx_packets:0.0 tx_bytes:0.0 tx_packets:0.0
 ^C⏎
 ```
 
-- with JSONL output (including timestamp):
+- With JSONL output (including timestamp):
 
 ```console
 $ ./pnstat -n enp6s0 -n enp1s0f0np0 -j
@@ -60,7 +60,7 @@ $ ./pnstat -n enp6s0 -n enp1s0f0np0 -j
 ^C⏎
 ```
 
-- with error/drop counters:
+- With error/drop counters:
 
 ```console
 $ ./pnstat -n enp6s0 -n enp1s0f0np0 --keys witherrors
@@ -73,7 +73,7 @@ enp1s0f0np0 rx_bytes:0.0 rx_dropped:0.0 rx_errors:0.0 rx_packets:0.0 tx_bytes:0.
 ^C⏎
 ```
 
-- with full items:
+- Full items:
 
 ```console
 $ ./pnstat -n enp6s0 -n enp1s0f0np0 --keys all
@@ -84,7 +84,7 @@ enp1s0f0np0 collisions:0.0 multicast:0.0 rx_bytes:0.0 rx_compressed:0.0 rx_crc_e
 ^C⏎
 ```
 
-- with full times in JSONL:
+- Full itmes in JSONL:
 
 ```console
 $ ./pnstat -n enp6s0 -n enp1s0f0np0 --keys all -j
