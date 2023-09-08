@@ -57,6 +57,29 @@ class Netdev:
         o = " ".join(map(lambda x: "{}:{}".format(x[0], x[1]), items))
         return self.name + " " + o
         
+def pnstat(args, netdevs):
+    nextat = datetime.now() + timedelta(seconds=args.interval)
+    for netdev in netdevs:
+        netdev.capture()
+
+    while True:
+        time.sleep((nextat - datetime.now()).total_seconds())
+        nextat = datetime.now() + timedelta(seconds=args.interval)
+        for netdev in netdevs:
+            netdev.capture()
+            
+        for netdev in netdevs:
+            if args.json:
+                o = netdev.json()
+            else:
+                o = netdev.printl()
+            print(o, file = args.output)
+            args.output.flush()
+
+        if args.count > 0:
+            args.count -= 1
+            if args.count == 0:
+                break
 
 def main():
 
@@ -98,28 +121,11 @@ def main():
 
     netdevs = [Netdev(x, params = params) for x in args.netdev]
 
-    nextat = datetime.now() + timedelta(seconds=args.interval)
-    for netdev in netdevs:
-        netdev.capture()
+    try:
+        pnstat(args, netdevs)
+    except KeyboardInterrupt:
+        pass
 
-    while True:
-        time.sleep((nextat - datetime.now()).total_seconds())
-        nextat = datetime.now() + timedelta(seconds=args.interval)
-        for netdev in netdevs:
-            netdev.capture()
-            
-        for netdev in netdevs:
-            if args.json:
-                o = netdev.json()
-            else:
-                o = netdev.printl()
-            print(o, file = args.output)
-            args.output.flush()
-
-        if args.count > 0:
-            args.count -= 1
-            if args.count == 0:
-                break
 
 if __name__ == "__main__":
     main()
