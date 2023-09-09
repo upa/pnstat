@@ -52,7 +52,7 @@ class Netdev:
         d = self.calculate()
         return json.dumps({
             "name": self.name,
-            "timestamp": self.curr.replace(tzinfo = timezone.utc).timestamp(),
+            "timestamp": self.curr.timestamp(),
             **d
         })
             
